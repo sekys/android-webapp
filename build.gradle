@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-beta1'
+        classpath 'com.android.tools.build:gradle:2.2.0-rc2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
         classpath "com.github.dcendents:android-maven-gradle-plugin:1.5"
     }
@@ -12,6 +12,7 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -20,7 +21,7 @@ group = 'sk.seky.android'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 21
@@ -78,26 +79,33 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '19.0'
 }
 
-task generateSourcesJar(type: Jar) {
+task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier 'sources'
+    classifier = 'sources'
 }
 
-task generateJavadocs(type: Javadoc) {
+task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
-task generateJavadocsJar(type: Jar) {
-    from generateJavadocs.destinationDir
-    classifier 'javadoc'
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
 }
 
-generateJavadocsJar.dependsOn generateJavadocs
-
-artifacts {
-    //archives generateJavaDocsJar
-    //archives generateSourcesJar
+publishing {
+    publications {
+        aar(MavenPublication) {
+            artifactId = 'android-webapp'
+            artifact sourcesJar
+            artifact javadocJar
+        }
+    }
 }
 
 bintray {
@@ -119,4 +127,5 @@ bintray {
         websiteUrl = 'https://github.com/sekys'
     }
     configurations = ['archives']
+    //publications = ['aar']
 }

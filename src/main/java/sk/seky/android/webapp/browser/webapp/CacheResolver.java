@@ -1,6 +1,5 @@
 package sk.seky.android.webapp.browser.webapp;
 
-import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceRequest;
@@ -13,12 +12,11 @@ import java.io.*;
 /**
  * Created by lsekerak on 6. 5. 2016.
  */
-public abstract class CustomCacheResolver implements WebRequestInterceptor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomCacheResolver.class);
+public abstract class CacheResolver implements WebRequestInterceptor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CacheResolver.class);
     protected File cache;
 
-    public CustomCacheResolver(Context context) {
-        File internalStorage = context.getFilesDir();
+    public CacheResolver(File internalStorage) {
         cache = new File(internalStorage, this.getClass().getSimpleName());
         cache.mkdir();
     }

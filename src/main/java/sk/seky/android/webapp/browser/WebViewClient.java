@@ -6,7 +6,6 @@ import android.os.Build;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sk.seky.android.webapp.browser.webapp.WebRequestInterceptor;
@@ -17,12 +16,12 @@ import java.util.List;
 /**
  * Created by lsekerak on 6. 5. 2016.
  */
-public class CustomWebViewClient extends WebViewClient {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CustomWebViewClient.class);
+public class WebViewClient extends android.webkit.WebViewClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebViewClient.class);
 
     private final List<WebRequestInterceptor> interceptors;
 
-    public CustomWebViewClient(List<WebRequestInterceptor> interceptors) {
+    public WebViewClient(List<WebRequestInterceptor> interceptors) {
         this.interceptors = interceptors;
         //this.interceptors = new ArrayList<>();
     }

@@ -10,6 +10,7 @@ import sk.seky.android.webapp.browser.webapp.WebResourceRequestByJavascript;
 import sk.seky.android.webapp.server.jaxrs.Annotations;
 import sk.seky.android.webapp.server.provider.HtmlBodyProvider;
 import sk.seky.android.webapp.server.provider.JsonBodyProvider;
+import sk.seky.android.webapp.server.provider.JsonQueryProvider;
 import sk.seky.android.webapp.server.provider.QueryParamInjector;
 
 import javax.ws.rs.NotFoundException;
@@ -28,11 +29,13 @@ public class RequestExecutor {
 
     private final HtmlBodyProvider htmlBodyProvider;
     private final JsonBodyProvider jsonBodyProvider;
+    private final JsonQueryProvider jsonQueryProvider;
     private final QueryParamInjector queryParamInjector;
 
     public RequestExecutor(ObjectMapper mapper, AssetManager assetManager) {
         this.htmlBodyProvider = new HtmlBodyProvider(assetManager);
         this.jsonBodyProvider = new JsonBodyProvider(mapper);
+        this.jsonQueryProvider = new JsonQueryProvider(mapper);
         this.queryParamInjector = new QueryParamInjector(mapper);
     }
 
@@ -58,7 +61,12 @@ public class RequestExecutor {
                 throw new NotFoundException();
             }
         } else {
-            return queryParamInjector.mapArguments(record, request.getUrl());
+            // Sem vstupuje WebResourceRequestByJavascript a Chrome requesty
+            if (request instanceof WebResourceRequestByJavascript) {
+                return jsonQueryProvider.mapArguments(record, (WebResourceRequestByJavascript) request);
+            } else {
+                return queryParamInjector.mapArguments(record, request);
+            }
         }
     }
 

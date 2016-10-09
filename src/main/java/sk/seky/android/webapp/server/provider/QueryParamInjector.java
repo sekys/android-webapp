@@ -1,6 +1,7 @@
 package sk.seky.android.webapp.server.provider;
 
 import android.net.Uri;
+import android.webkit.WebResourceRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import sk.seky.android.webapp.server.RequestRecord;
@@ -21,15 +22,20 @@ public class QueryParamInjector {
         this.mapper = mapper;
     }
 
-    public Object[] mapArguments(RequestRecord record, Uri uri) throws IOException {
+    public Object[] mapArguments(RequestRecord record, WebResourceRequest request) throws IOException {
+        Uri uri = request.getUrl();
         ObjectReader[] paramReaders = record.getParamReaders();
         Annotation[][] annotations = record.getParametersAnnotation();
         Object[] args = new Object[paramReaders.length];
         for (int i = 0; i < paramReaders.length; i++) {
-            QueryParam annotation = Annotations.findAnnotation(annotations[i], QueryParam.class); // TODO: tu sa nemusi uplatnit dedenie
+            // TODO: tu sa nemusi uplatnit dedenie
+            QueryParam annotation = Annotations.findAnnotation(annotations[i], QueryParam.class);
             String param = uri.getQueryParameter(annotation.value());
-            Object arg = paramReaders[i].readValue(param);
-            args[i] = param;
+            Object arg = null;
+            if (param != null) {
+                arg = paramReaders[i].readValue(param);
+            }
+            args[i] = arg;
         }
         return args;
     }
