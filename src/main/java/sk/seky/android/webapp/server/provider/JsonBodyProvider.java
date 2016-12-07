@@ -26,11 +26,11 @@ public class JsonBodyProvider {
         ObjectReader[] paramReaders = record.getParamReaders();
         Object[] args = new Object[paramReaders.length];
         for (int i = 0; i < paramReaders.length; i++) {
-            JsonNode node = nodes.get(i);
-            if (node == null) {
-                throw new IllegalArgumentException("Missing argument for " + record.getMethod().getName() + " by " + nodes.toString());
-            }
-            Object arg = paramReaders[i].readValue(node);
+            // JsonNode node = nodes.get(i);
+            //if (node == null) {
+            //    throw new IllegalArgumentException("Missing argument for " + record.getMethod().getName() + " by " + nodes.toString());
+            //}
+            Object arg = paramReaders[i].readValue(nodes); // TODO: nateraz povolime len 1 parameter
             args[i] = arg;
         }
         return args;
